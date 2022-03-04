@@ -1,14 +1,9 @@
 Inter planetary Micro Blog
 ==========================
 
+## Development
 
+- Edit files
+- run `./push.sh`
 
-notes:
-$ curl -F 'files[]=@/path/to/fileX' -F 'files[]=@/path/to/fileY' ... http://localhost/upload
-
-
-Dev setup
-- update files
-- update folder on local node
-- republish ipns
-- reload page
+See site at IPNS address printed by push
