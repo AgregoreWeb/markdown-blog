@@ -6,19 +6,41 @@
   <body>
     <h1>Hello there</h1>
     <p>Have your say:</p>
-    <form>
-    <textarea></textarea>
-    <input type="submit" value="send" />
+    <form id="fileForm">
+      <input name="filename" />
+      <textarea name="content"></textarea>
+      <input type="submit" value="send" />
     </form>
+
   </body>
-  <script src="script.js" />
+  <script src="script.js" ></script>
   <script type="text/javascript">
-  document.ready(function(){
-    console.log('beep');
-    foo();
-    boo();
-    hoo();
-  });
+
+    async function submitForm(event){
+      event.preventDefault();
+      let text = document.querySelector('textarea[name="content"]').value;
+      let filename = document.querySelector('input[name="filename"]').value;
+      var file = new File([text], filename, {
+        type: "text/plain",
+      });
+      const toPut = `ipfs:///${filename}`
+
+      response = await fetch(toPut, {
+        method: 'POST',
+        body: file,
+        mode: 'cors'
+      });
+
+      const finalURL = await response.text()
+      console.log(finalURL);
+    }
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+      console.log('beep');
+      boo();
+      document.querySelector('#fileForm').onsubmit = submitForm;
+    });
+
   </script>
 </html>
 
