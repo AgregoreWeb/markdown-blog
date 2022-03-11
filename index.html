@@ -16,6 +16,32 @@
   <script src="script.js" ></script>
   <script type="text/javascript">
 
+    async function addFile(file, filename){
+      // # add file to a folder - need CID of current folder, if none, doesn't matter?
+      // Current CID of folder?
+      // NEW_CID = post to /ipfs/CID/path/file
+      // update ipns
+
+      let lastCid = window.localStorage.getItem('lastCid');
+      let url = `ipfs://${lastCid?lastCid:''}/ipmb-db/${filename}`
+
+      response = await fetch(url, {
+        method: 'POST',
+        body: file,
+        mode: 'cors'
+      });
+
+      const finalUrl = await response.text()
+      lastCid = new URL(finalUrl).host;
+
+      // TODO update IPNS
+      // r = fetch('ipns://ipmb', {method: 'POST', body: lastCid})
+
+      window.localStorage.lastCid = lastCid;
+      console.log(finalUrl);
+      return lastCid;
+    }
+
     async function submitForm(event){
       event.preventDefault();
       let text = document.querySelector('textarea[name="content"]').value;
@@ -23,21 +49,12 @@
       var file = new File([text], filename, {
         type: "text/plain",
       });
-      const toPut = `ipfs:///${filename}`
-
-      response = await fetch(toPut, {
-        method: 'POST',
-        body: file,
-        mode: 'cors'
-      });
-
-      const finalURL = await response.text()
-      console.log(finalURL);
+      let lastCid = await addFile(file, filename)
+      console.log(lastCid);
     }
 
     document.addEventListener("DOMContentLoaded", function(event) {
       console.log('beep');
-      boo();
       document.querySelector('#fileForm').onsubmit = submitForm;
     });
 
