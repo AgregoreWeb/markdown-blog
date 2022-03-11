@@ -1,6 +1,12 @@
 Inter planetary Micro Blog
 ==========================
 
+## To use:
+
+- start agregore browser locally
+- run `./push`
+- go to ipns URL
+
 ## Development
 
 - Edit files
