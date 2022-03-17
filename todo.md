@@ -1,0 +1,13 @@
+# TODO
+- [ ] use templates for web component markup
+- [ ] button to publish to IPNS
+- [ ] Show last published CID
+- [ ] metadata for site (title, anything else?)
+- [ ] UX for starting out
+- [ ] edit
+- [ ] delete
+- [ ] order
+- [ ] dates in files
+- [ ] consider frontmatter or other metadata format for posts
+- [ ] enforce markdown?
+- [ ] abandon blog - aka - start over

@@ -25,7 +25,7 @@ class App extends HTMLElement {
     this._root.appendChild(this._postList);
     this._root.appendChild(blogLink);
     this._root.appendChild(latestLink);
-    this._root.appendChild(this._startOver);
+    //this._root.appendChild(this._startOver);
   }
 
   _render(){
@@ -68,5 +68,3 @@ class App extends HTMLElement {
 
 }
 customElements.define('ipmb-app', App);
-
-
