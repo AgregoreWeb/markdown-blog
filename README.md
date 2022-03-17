@@ -4,7 +4,7 @@ Inter planetary Micro Blog
 ## To use:
 
 - start agregore browser locally
-- run `./push`
+- run `./push.sh`
 - go to ipns URL
 
 ## Development
