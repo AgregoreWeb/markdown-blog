@@ -2,6 +2,7 @@
 IPFS_NODE="http://localhost:5001"
 
 echo Creating folder
+curl -X POST "$IPFS_NODE/api/v0/files/rm?arg=/ipmb&recursive=true"
 curl -X POST "$IPFS_NODE/api/v0/files/mkdir?arg=/ipmb"
 
 for f in `ls`
