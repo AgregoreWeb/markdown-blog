@@ -1,47 +1,52 @@
-import {addFile, loadContent} from './lib.js';
+import {addFile} from './lib.js';
 
-class PostList extends HTMLElement {
-  constructor() {
-    super();
-    const shadow = this.attachShadow({ mode: 'open' });
-    const container = document.createElement('div');
-    container.innerHTML = `<ul class="item-list"></ul>`;
-    shadow.appendChild(container);
-  }
-  async connectedCallback() {
-    let files = await loadContent();
-    let domList = this.shadowRoot.querySelector('.item-list');
-    for (let f of files){
-      let {filename, link} = f;
-      let li = document.createElement('li');
-      let a = document.createElement('a');
-      a.href = link;
-      a.textContent = filename;
-      li.appendChild(a)
-      domList.appendChild(li);
-    }
-  }
-}
-customElements.define('post-list', PostList);
-
-async function submitForm(event){
-  event.preventDefault();
-  let text = document.querySelector('textarea[name="content"]').value;
-  let filename = document.querySelector('input[name="filename"]').value;
-  var file = new File([text], filename, {
+async function submitForm(e){
+  const {filename, content} = e.detail;
+  console.log(`submitForm ${filename} ${content}`);
+  var file = new File([content], filename, {
     type: "text/plain",
   });
   let lastCid = await addFile(file, filename)
-  console.log(lastCid);
+  console.log(`lastCid = ${lastCid}`);
 }
 
-console.log('beep');
-let lastCid = window.localStorage.getItem('lastCid');
-console.log(`lastCid = ${lastCid}`);
+class App extends HTMLElement {
+  constructor(){
+    super();
 
-if (window.localStorage.ipns){
-  let ipns = window.localStorage.ipns;
-  let blogLink = document.querySelector('#blogLink');
-  blogLink.innerHTML = `<a href="${ipns}">${ipns}</a>`;
+    let blogLink = '';
+    if (window.localStorage.ipns){
+      let ipns = window.localStorage.ipns;
+      blogLink = document.createElement('div');
+      blogLink.id = 'blogLink';
+      blogLink.innerHTML = `<a href="${ipns}/index.md">${ipns}/index.md</a>`;
+    }
+
+    let latestLink = '';
+    if (window.localStorage.lastCid){
+      let lastCid = window.localStorage.lastCid;
+      latestLink = document.createElement('div');
+      latestLink.id = 'latestLink';
+      latestLink.innerHTML = `<a href="ipfs://${lastCid}/index.md">ipfs://${lastCid}/index.md</a>`;
+    }
+
+    this._shadow = this.attachShadow({mode: 'open'})
+    this._createPost = document.createElement('create-post');
+    this._postList = document.createElement('post-list');
+    this._shadow.appendChild(this._createPost);
+    this._shadow.appendChild(this._postList);
+    this._shadow.appendChild(blogLink);
+    this._shadow.appendChild(latestLink);
+  }
+
+  async connectedCallback(){
+    console.log('beep');
+    let lastCid = window.localStorage.getItem('lastCid');
+    console.log(`lastCid = ${lastCid}`);
+    //document.querySelector('#fileForm').onsubmit = submitForm;
+    this._createPost.addEventListener('onSubmit', submitForm);
+  }
 }
-document.querySelector('#fileForm').onsubmit = submitForm;
+customElements.define('ipmb-app', App);
+
+

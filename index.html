@@ -2,158 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <style>
-      form > div {
-        display: flex;
-        flex-direction: column;
-      }
-    </style>
+    <title>Inter Planetary Micro Blog</title>
+    <script type="module" src="lib.js" ></script>
+    <script type="module" src="create-post.js" ></script>
+    <script type="module" src="post-list.js" ></script>
+    <script type="module" src="index.js" ></script>
   </head>
   <body>
     <h1>Hello there</h1>
-    <p>Have your say:</p>
-    <form id="fileForm">
-      <div>
-        <label>Title</label>
-        <input name="filename" />
-      </div>
-      <div>
-        <label>Body</label>
-        <textarea name="content" rows="15"></textarea>
-      </div>
-      <input type="submit" value="send" />
-    </form>
-
-    <post-list></post-list>
-
-    <div id="blogLink"></div>
-
+    <p>Have your say</p>
+    <ipmb-app></ipmb-app>
   </body>
-  <script type="module" src="lib.js" ></script>
-  <script type="module" src="index.js" ></script>
-
-  <script type="text/javascript">
-//  class PostList extends HTMLElement {
-//    constructor() {
-//      super();
-//      const shadow = this.attachShadow({ mode: 'open' });
-//      const container = document.createElement('div');
-//      container.innerHTML = `<ul class="item-list"></ul>`;
-//      shadow.appendChild(container);
-//    }
-//    async connectedCallback() {
-//      let files = await loadContent();
-//      let domList = this.shadowRoot.querySelector('.item-list');
-//      for (let f of files){
-//        let {filename, link} = f;
-//        let li = document.createElement('li');
-//        let a = document.createElement('a');
-//        a.href = link;
-//        a.textContent = filename;
-//        li.appendChild(a)
-//        domList.appendChild(li);
-//      }
-//    }
-//  }
-//  customElements.define('post-list', PostList);
-
-//  async function addFile(file, filename){
-//    // # add file to a folder - need CID of current folder, if none, doesn't matter?
-//    // Current CID of folder?
-//    // NEW_CID = post to /ipfs/CID/path/file
-//    // update ipns
-
-//    let lastCid = window.localStorage.getItem('lastCid');
-//    let url = `ipfs://${lastCid?lastCid:''}/ipmb-db/${filename}`
-
-//    response = await fetch(url, {
-//      method: 'POST',
-//      body: file,
-//      mode: 'cors'
-//    });
-
-//    const finalUrl = await response.text()
-//    lastCid = new URL(finalUrl).host;
-
-//    window.localStorage.lastCid = lastCid;
-//    console.log(finalUrl);
-
-//    // update IPNS (TODO do this async)
-//    let r = await fetch('ipns://ipmb', {method: 'POST', body: lastCid});
-//    const ipns = await r.text();
-//    const updateHtml = !window.localStorage.ipns;
-//    window.localStorage.ipns = ipns;
-//    if (updateHtml){
-//      let blogLink = document.querySelector('#blogLink');
-//      blogLink.innerHTML = `<a href="${ipns}">${ipns}</a>`;
-//    }
-
-//    return lastCid;
-//  }
-
-//  async function submitForm(event){
-//    event.preventDefault();
-//    let text = document.querySelector('textarea[name="content"]').value;
-//    let filename = document.querySelector('input[name="filename"]').value;
-//    var file = new File([text], filename, {
-//      type: "text/plain",
-//    });
-//    let lastCid = await addFile(file, filename)
-//    console.log(lastCid);
-//  }
-
-//  async function loadContent(){
-//    // this is a workaround the current incorrect behavior where js-ipfs-fetch nests folders when adding a file to a folder
-//    async function _fetchRecursive(cid){
-//      // list files in dir
-//      let r = await fetch(`ipfs://${cid}/ipmb-db/`);
-//      let d = await r.json();
-
-//      let files = [];
-//      for (let filename of d){
-//        let fileRequest = await fetch(`ipfs://${cid}/ipmb-db/${filename}`);
-//        let content = await fileRequest.text();
-//        files.push({
-//          filename, 
-//          content,
-//          link: `ipfs://${cid}/ipmb-db/${filename}`,
-//        });
-//      }
-//      return files;
-
-//      // read nested dir
-//      //let dr = await fetch(`ipfs://${cid}/`);
-//      //let dd = await dr.json();
-//      //let nestedDirs = dd.filter( dirname => dirname != 'ipmb-db/' );
-//      //if (nestedDirs.length == 1){
-//      //  let newCid = nestedDirs[0].split('/')[0];
-//      //  let files = await _fetchRecursive(newCid);
-//      //  return [ ...files, { filename, content, link: `ipfs://${cid}/ipmb-db/${filename}` } ];
-//      //} else {
-//      //  return [ { filename, content, link: `ipfs://${cid}/ipmb-db/${filename}` } ]
-//      //}
-//    }
-//    let lastCid = window.localStorage.getItem('lastCid');
-//    let files = _fetchRecursive(lastCid);
-//    console.log(files);
-//    return files;
-//  }
-
-
-  //document.addEventListener("DOMContentLoaded", function(event) {
-  //  console.log('beep');
-  //  let lastCid = window.localStorage.getItem('lastCid');
-  //  console.log(`lastCid = ${lastCid}`);
-
-  //  if (window.localStorage.ipns){
-  //    let ipns = window.localStorage.ipns;
-  //    let blogLink = document.querySelector('#blogLink');
-  //    blogLink.innerHTML = `<a href="${ipns}">${ipns}</a>`;
-  //  }
-
-  //  document.querySelector('#fileForm').onsubmit = submitForm;
-  //});
-
-  </script>
 </html>
 
