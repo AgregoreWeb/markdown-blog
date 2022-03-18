@@ -1,4 +1,4 @@
-import {addFile} from './lib.js';
+import {addFile, removeFile} from './lib.js';
 
 class App extends HTMLElement {
   constructor(){
@@ -28,6 +28,38 @@ class App extends HTMLElement {
     //this._root.appendChild(this._startOver);
   }
 
+
+  async connectedCallback(){
+    console.log('beep');
+    let lastCid = window.localStorage.getItem('lastCid');
+    console.log(`lastCid = ${lastCid}`);
+    this._createPost.addEventListener('onSubmit', this.submitForm.bind(this));
+    this._postList.addEventListener('onRemove', this.onRemovePost.bind(this));
+    this._render();
+  }
+
+  async submitForm(e){
+    const {filename, content} = e.detail;
+    console.log(`submitForm ${filename} ${content}`);
+    var file = new File([content], filename, {
+      type: "text/plain",
+    });
+    let lastCid = await addFile(file, filename)
+    this._postList.setAttribute('cid', lastCid);
+    this._render();
+    //this._root.querySelector('#latestLink a').text = `ipfs://${lastCid}/index.md`;
+    //this._root.querySelector('#latestLink a').href = `ipfs://${lastCid}/index.md`;
+
+    console.log(`lastCid = ${lastCid}`);
+  }
+
+  async onRemovePost(e){
+    const {filename} = e.detail;
+    let lastCid = await removeFile(filename);
+    this._postList.setAttribute('cid', lastCid);
+    this._render();
+  }
+
   _render(){
     if (window.localStorage.ipns){
       let ipns = window.localStorage.ipns;
@@ -41,29 +73,6 @@ class App extends HTMLElement {
       this._root.querySelector('#latestLink a').text = `ipfs://${lastCid}/index.md`;
       this._root.querySelector('#latestLink a').href = `ipfs://${lastCid}/index.md`;
     }
-  }
-
-  async connectedCallback(){
-    console.log('beep');
-    let lastCid = window.localStorage.getItem('lastCid');
-    console.log(`lastCid = ${lastCid}`);
-    //document.querySelector('#fileForm').onsubmit = submitForm;
-    this._createPost.addEventListener('onSubmit', this.submitForm.bind(this));
-    this._render();
-  }
-
-  async submitForm(e){
-    const {filename, content} = e.detail;
-    console.log(`submitForm ${filename} ${content}`);
-    var file = new File([content], filename, {
-      type: "text/plain",
-    });
-    let lastCid = await addFile(file, filename)
-    this._postList.setAttribute('cid', lastCid);
-    this._root.querySelector('#latestLink a').text = `ipfs://${lastCid}/index.md`;
-    this._root.querySelector('#latestLink a').href = `ipfs://${lastCid}/index.md`;
-
-    console.log(`lastCid = ${lastCid}`);
   }
 
 }

@@ -9,6 +9,62 @@ export async function publish(cid){
   }
 }
 
+export async function thisIsBlog(doFileStuff){
+
+  let lastCid = window.localStorage.getItem('lastCid');
+  const previousCid = lastCid;
+ 
+  // make the update
+  lastCid = await doFileStuff();
+
+  // get content and update index
+  let files = await _fetchRecursive(lastCid);
+  let indexBody = '';
+  for (let post of files){
+    indexBody = indexBody.concat(`- [${post.filename}](${post.link})\n`)
+  }
+  if (previousCid && previousCid != ''){
+    indexBody = indexBody.concat(`\n[previous version of this blog](ipfs://${previousCid}/index.md)`)
+  }
+  
+  // write index.md
+  let url = `ipfs://${lastCid}/index.md`;
+  let response = await fetch(url, {
+    method: 'POST',
+    body: indexBody,
+    mode: 'cors'
+  });
+  let contentUrl = await response.text()
+  lastCid = new URL(contentUrl).host;
+
+  window.localStorage.lastCid = lastCid;
+  console.log(contentUrl);
+
+  return lastCid;
+
+}
+
+export async function removeFile(filename){
+
+  let lastCid = window.localStorage.getItem('lastCid');
+
+  const _removeFile = async ( ) => {
+    let url = `ipfs://${lastCid?lastCid:''}/ipmb-db/${filename}`
+    console.log(`DELETING ${url}`);
+    let response = await fetch(url, {
+      method: 'DELETE',
+      mode: 'cors'
+    });
+    let contentUrl = await response.text()
+    let newCid = new URL(contentUrl).host;
+    return newCid;
+  }
+
+  lastCid = await thisIsBlog(_removeFile);
+  return lastCid;
+
+}
+
 export async function addFile(file, filename){
   // # add file to a folder - need CID of current folder, if none, doesn't matter?
   // Current CID of folder?
@@ -37,15 +93,6 @@ export async function addFile(file, filename){
   }
 
   if (previousCid && previousCid != ''){
-    // save previous version
-    //url = `ipfs://${lastCid}/prev`;
-    //response = await fetch(url, {
-    //  method: 'POST',
-    //  body: previousCid,
-    //  mode: 'cors'
-    //});
-    //contentUrl = await response.text()
-    //lastCid = new URL(contentUrl).host;
     indexBody = indexBody.concat(`\n[previous version of this blog](ipfs://${previousCid}/index.md)`)
   }
   
@@ -72,6 +119,7 @@ async function _fetchRecursive(cid){
   // list files in dir
   let r = await fetch(`ipfs://${cid}/ipmb-db/`);
   let d = await r.json();
+  d = d.filter( e => !!e); // empty dir returns `[ null ]`
 
   let files = [];
   for (let filename of d){

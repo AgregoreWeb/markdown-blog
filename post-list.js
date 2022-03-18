@@ -1,5 +1,13 @@
 import {loadContent} from './lib.js';
 
+const templateItem = document.createElement('template');
+templateItem.innerHTML = `
+    <li class="item">
+      <a></a>
+      <button class="destroy">🗑</button>
+    </li>
+`;
+
 class PostList extends HTMLElement {
   constructor() {
     super();
@@ -22,17 +30,21 @@ class PostList extends HTMLElement {
   }
 
   _render(){
-    let domList = this.shadowRoot.querySelector('.item-list');
     let postList = [];
     for (let f of this._files){
+      let itemNode = templateItem.content.cloneNode(true)
+      postList = [...postList, itemNode];
+
       let {filename, link} = f;
-      let li = document.createElement('li');
-      let a = document.createElement('a');
+      let a = itemNode.querySelector('a');
       a.href = link;
       a.textContent = filename;
-      li.appendChild(a)
-      postList = [...postList, li]
+      let deleteButton = itemNode.querySelector('button');
+      deleteButton.addEventListener('click', (e) => {
+        this.dispatchEvent(new CustomEvent('onRemove', { detail: {filename} }));
+      });
     }
+    let domList = this.shadowRoot.querySelector('.item-list');
     domList.replaceChildren(...postList);
   }
 
