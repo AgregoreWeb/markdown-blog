@@ -3,10 +3,8 @@ export async function publish(cid){
   const ipns = await r.text();
   const updateHtml = !window.localStorage.ipns;
   window.localStorage.ipns = ipns;
-  if (updateHtml){
-    let blogLink = document.querySelector('#blogLink');
-    blogLink.innerHTML = `<a href="${ipns}">${ipns}</a>`;
-  }
+  window.localStorage.lastPublishedCid = cid;
+  return ipns;
 }
 
 export async function thisIsBlog(doFileStuff){
@@ -26,16 +24,25 @@ export async function thisIsBlog(doFileStuff){
   if (previousCid && previousCid != ''){
     indexBody = indexBody.concat(`\n[previous version of this blog](ipfs://${previousCid}/index.md)`)
   }
-  
-  // write index.md
+
+  // delete old index.md
   let url = `ipfs://${lastCid}/index.md`;
   let response = await fetch(url, {
+    method: 'DELETE',
+      mode: 'cors'
+  });
+  let contentUrl = await response.text()
+  let newCid = new URL(contentUrl).host;
+
+  // write index.md
+  url = `ipfs://${newCid}/index.md`;
+  response = await fetch(url, {
     method: 'POST',
     body: indexBody,
     mode: 'cors'
   });
-  let contentUrl = await response.text()
-  lastCid = new URL(contentUrl).host;
+  contentUrl = await response.text()
+  let lastCid = new URL(contentUrl).host;
 
   window.localStorage.lastCid = lastCid;
   console.log(contentUrl);
