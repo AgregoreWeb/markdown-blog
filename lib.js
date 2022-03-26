@@ -42,7 +42,7 @@ export async function thisIsBlog(doFileStuff){
     mode: 'cors'
   });
   contentUrl = await response.text()
-  let lastCid = new URL(contentUrl).host;
+  lastCid = new URL(contentUrl).host;
 
   window.localStorage.lastCid = lastCid;
   console.log(contentUrl);
