@@ -12,6 +12,10 @@ do
 done
 FOLDER_HASH=`curl -s -X POST "$IPFS_NODE/api/v0/files/stat?arg=/ipmb" | jq -r .Hash`
 
+V1_HASH=`curl -s -X POST "$IPFS_NODE/api/v0/cid/format?arg=$FOLDER_HASH&v=1&b=base32" | jq -r .Formatted`
+
+echo ipfs://$V1_HASH
+
 echo Publishing /ipmb with key: $FOLDER_HASH
 IPNS_NAME=`curl -s -X POST "$IPFS_NODE/api/v0/name/publish?arg=$FOLDER_HASH" | jq -r .Name`
 
