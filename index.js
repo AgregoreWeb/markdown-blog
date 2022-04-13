@@ -1,27 +1,30 @@
 import {addFile, removeFile, publish} from './lib.js';
 
+const template = document.createElement('template');
+template.innerHTML = `
+  <div>
+    <post-list></post-list>
+    <blog-links></blog-links>
+    <create-post></create-post>
+  </div>
+`;
+
 class App extends HTMLElement {
   constructor(){
     super();
 
-    this._root = this.attachShadow({mode: 'open'})
-    this._createPost = document.createElement('create-post');
-    this._postList = document.createElement('post-list');
+    this._root = this.attachShadow({mode: 'open'});
+    this._root.appendChild(template.content.cloneNode(true));
+    this._createPost =  this._root.querySelector('create-post');
+    this._postList = this._root.querySelector('post-list');
     this._postList.setAttribute('cid', window.localStorage.lastCid);
-    this._links = document.createElement('blog-links')
+    this._links = this._root.querySelector('blog-links');
     if (window.localStorage.ipns){
       this._links.setAttribute('ipns', window.localStorage.ipns)
     }
     if (window.localStorage.lastCid){
       this._links.setAttribute('lastCid', window.localStorage.lastCid);
     }
-
-    //this._startOver = document.createElement('button');
-    //this._startOver.text = 'START OVER';
-    this._root.appendChild(this._postList);
-    this._root.appendChild(this._links);
-    this._root.appendChild(this._createPost);
-    //this._root.appendChild(this._startOver);
   }
 
   connectedCallback(){
