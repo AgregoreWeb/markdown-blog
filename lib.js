@@ -16,7 +16,7 @@ export async function thisIsBlog(doFileStuff){
   lastCid = await doFileStuff();
 
   // get content and update index
-  let files = await _fetchRecursive(lastCid);
+  let files = await _fetchFolder(lastCid);
   let indexBody = '';
   for (let post of files){
     indexBody = indexBody.concat(`- [${post.filename}](${post.link})\n`)
@@ -93,7 +93,7 @@ export async function addFile(file, filename){
 
 
   // get content and update index
-  let files = await _fetchRecursive(lastCid);
+  let files = await _fetchFolder(lastCid);
   let indexBody = '';
   for (let post of files){
     indexBody = indexBody.concat(`- [${post.filename}](${post.link})\n`)
@@ -121,8 +121,7 @@ export async function addFile(file, filename){
   return lastCid;
 }
 
-// this is a workaround the current incorrect behavior where js-ipfs-fetch nests folders when adding a file to a folder
-async function _fetchRecursive(cid){
+async function _fetchFolder(cid){
   // list files in dir
   let r = await fetch(`ipfs://${cid}/ipmb-db/`);
   let d = await r.json();
@@ -139,18 +138,6 @@ async function _fetchRecursive(cid){
     });
   }
   return files;
-
-  // read nested dir
-  //let dr = await fetch(`ipfs://${cid}/`);
-  //let dd = await dr.json();
-  //let nestedDirs = dd.filter( dirname => dirname != 'ipmb-db/' );
-  //if (nestedDirs.length == 1){
-  //  let newCid = nestedDirs[0].split('/')[0];
-  //  let files = await _fetchRecursive(newCid);
-  //  return [ ...files, { filename, content, link: `ipfs://${cid}/ipmb-db/${filename}` } ];
-  //} else {
-  //  return [ { filename, content, link: `ipfs://${cid}/ipmb-db/${filename}` } ]
-  //}
 }
 
 
@@ -160,7 +147,7 @@ export async function loadContent(){
     return [];
   };
 
-  let files = _fetchRecursive(lastCid);
+  let files = _fetchFolder(lastCid);
   console.log(files);
   return files;
 }
