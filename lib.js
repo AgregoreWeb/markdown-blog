@@ -89,51 +89,22 @@ export async function removeFile(filename){
 }
 
 export async function addFile(file, filename){
-  // # add file to a folder - need CID of current folder, if none, doesn't matter?
-  // Current CID of folder?
-  // NEW_CID = post to /ipfs/CID/path/file
-  // update ipns
 
   let lastCid = window.localStorage.getItem('lastCid');
-  const previousCid = lastCid;
-  let url = `ipfs://${lastCid?lastCid:''}/ipmb-db/${filename}`
 
-  let response = await fetch(url, {
-    method: 'POST',
-    body: file,
-    mode: 'cors'
-  });
-
-  let contentUrl = await response.text()
-  lastCid = new URL(contentUrl).host;
-
-
-  // get content and update index
-  let files = await _fetchFolder(lastCid);
-  let indexBody = '';
-  for (let post of files){
-    indexBody = indexBody.concat(`- [${post.filename}](${post.link})\n`)
+  const _addFile = async () => {
+    let url = `ipfs://${lastCid?lastCid:''}/ipmb-db/${filename}`
+    console.log(`ADDING ${url}`);
+    let response = await fetch(url, {
+      method: 'POST',
+      body: file,
+      mode: 'cors'
+    });
+    let contentUrl = await response.text()
+    return new URL(contentUrl).host;
   }
 
-  if (previousCid && previousCid != ''){
-    indexBody = indexBody.concat(`\n[previous version of this blog](ipfs://${previousCid}/index.md)`)
-  }
-  
-  url = `ipfs://${lastCid}/index.md`;
-  response = await fetch(url, {
-    method: 'POST',
-    body: indexBody,
-    mode: 'cors'
-  });
-  contentUrl = await response.text()
-  lastCid = new URL(contentUrl).host;
-
-  window.localStorage.lastCid = lastCid;
-  console.log(contentUrl);
-
-  // update IPNS (TODO do this async)
-  // publish(lastCid)
-
+  lastCid = await thisIsBlog(_addFile);
   return lastCid;
 }
 
