@@ -1,5 +1,8 @@
 export async function publish(cid){
-  let r = await fetch('ipns://ipmb', {method: 'POST', body: cid});
+  let r = await fetch('ipns://ipmb', {
+    method: 'POST', 
+    body: cid,
+  });
   const ipns = await r.text();
   const updateHtml = !window.localStorage.ipns;
   window.localStorage.ipns = ipns;
@@ -7,6 +10,17 @@ export async function publish(cid){
   return ipns;
 }
 
+function parseMeta(file){
+  return {
+    ...file,
+    title: decodeURIComponent(file.filename.slice(11)).replace(/\.md$/, ''),
+    date: file.filename.slice(0, 10),
+    excerpt: file.content.slice(0, Math.min(file.content.indexOf('\n'), 100)),
+  }
+}
+
+
+// Create markdown blog based on data stored in lastCid
 export async function thisIsBlog(doFileStuff){
 
   let lastCid = window.localStorage.getItem('lastCid');
@@ -17,9 +31,11 @@ export async function thisIsBlog(doFileStuff){
 
   // get content and update index
   let files = await _fetchFolder(lastCid);
+  files = files.map(parseMeta);
   let indexBody = '';
   for (let post of files){
-    indexBody = indexBody.concat(`- [${post.filename}](${post.link})\n`)
+    // this should probably be a relative link
+    indexBody = indexBody.concat(`- **[${post.title}](/ipmb-db/${post.filename})** (posted ${post.date}) - ${post.excerpt}\n`)
   }
   if (previousCid && previousCid != ''){
     indexBody = indexBody.concat(`\n[previous version of this blog](ipfs://${previousCid}/index.md)`)
@@ -123,7 +139,11 @@ export async function addFile(file, filename){
 
 async function _fetchFolder(cid){
   // list files in dir
-  let r = await fetch(`ipfs://${cid}/ipmb-db/`);
+  let r = await fetch(`ipfs://${cid}/ipmb-db/`, {
+    headers: {
+      'X-Resolve': 'none',
+    }
+  });
   let d = await r.json();
   d = d.filter( e => !!e); // empty dir returns `[ null ]`
 
@@ -147,7 +167,8 @@ export async function loadContent(){
     return [];
   };
 
-  let files = _fetchFolder(lastCid);
+  let files = await _fetchFolder(lastCid);
+  files = files.map(parseMeta);
   console.log(files);
   return files;
 }
