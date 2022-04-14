@@ -1,3 +1,8 @@
+// TODO
+// - decide where to update window.localstorage.{lastCid,ipns,lastPublishedCid}
+// - make function names consistent nounVerb or verbNoun
+
+
 export async function publish(cid){
   let r = await fetch('ipns://ipmb', {
     method: 'POST', 
@@ -88,7 +93,8 @@ export async function removeFile(filename){
 
 }
 
-export async function addFile(file, filename){
+// Adds a post and regenerates the index
+export async function postAdd(file, filename){
 
   let lastCid = window.localStorage.getItem('lastCid');
 
@@ -108,8 +114,24 @@ export async function addFile(file, filename){
   return lastCid;
 }
 
+// Add media
+export async function mediaAdd(file){
+  let lastCid = window.localStorage.getItem('lastCid');
+  let url = `ipfs://${lastCid?lastCid:''}/media/${file.name}`
+  console.log(`ADDING ${url}`);
+  let response = await fetch(url, {
+    method: 'POST',
+    body: file,
+    mode: 'cors'
+  });
+  let contentUrl = await response.text()
+  window.localStorage.lastCid = new URL(contentUrl).host;
+  return window.localStorage.lastCid;
+}
+
+// list files in dir
+// TODO remove hard-coded /ipmb-db and pass as parameter
 async function _fetchFolder(cid){
-  // list files in dir
   let r = await fetch(`ipfs://${cid}/ipmb-db/`, {
     headers: {
       'X-Resolve': 'none',
@@ -143,4 +165,3 @@ export async function loadContent(){
   console.log(files);
   return files;
 }
-

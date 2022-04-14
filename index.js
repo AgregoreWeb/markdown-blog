@@ -1,4 +1,4 @@
-import {addFile, removeFile, publish} from './lib.js';
+import {postAdd, removeFile, publish, mediaAdd} from './lib.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -6,6 +6,7 @@ template.innerHTML = `
     <post-list></post-list>
     <blog-links></blog-links>
     <create-post></create-post>
+    <file-upload></file-upload>
   </div>
 `;
 
@@ -19,6 +20,7 @@ class App extends HTMLElement {
     this._postList = this._root.querySelector('post-list');
     this._postList.setAttribute('cid', window.localStorage.lastCid);
     this._links = this._root.querySelector('blog-links');
+    this._fileUpload = this._root.querySelector('file-upload');
     if (window.localStorage.ipns){
       this._links.setAttribute('ipns', window.localStorage.ipns)
     }
@@ -31,25 +33,34 @@ class App extends HTMLElement {
     console.log('beep');
     let lastCid = window.localStorage.getItem('lastCid');
     console.log(`lastCid = ${lastCid}`);
-    this._createPost.addEventListener('onSubmit', this.submitForm.bind(this));
-    this._postList.addEventListener('onRemove', this.onRemovePost.bind(this));
+    this._createPost.addEventListener('onSubmit', this.onPostAdd.bind(this));
+    this._postList.addEventListener('onRemove', this.onPostRemove.bind(this));
+    this._fileUpload.addEventListener('onSubmit', this.onFileUpload.bind(this));
   }
 
-  async submitForm(e){
+  async onPostAdd(e){
     const {filename, content} = e.detail;
     console.log(`submitForm ${filename} ${content}`);
     var file = new File([content], filename, {
       type: "text/plain",
     });
-    let lastCid = await addFile(file, filename)
+    let lastCid = await postAdd(file, filename);
     this._postList.setAttribute('cid', lastCid);
     this._links.setAttribute('lastCid', lastCid);
     console.log(`lastCid = ${lastCid}`);
   }
 
-  async onRemovePost(e){
+  async onPostRemove(e){
     const {filename} = e.detail;
     let lastCid = await removeFile(filename);
+    this._postList.setAttribute('cid', lastCid);
+    this._links.setAttribute('lastCid', lastCid);
+  }
+
+  async onFileUpload(e){
+    const {file} = e.detail;
+    console.log(`onFileUpload file.name=${file.name}`);
+    let lastCid = await mediaAdd(file);
     this._postList.setAttribute('cid', lastCid);
     this._links.setAttribute('lastCid', lastCid);
   }
