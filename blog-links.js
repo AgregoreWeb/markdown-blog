@@ -14,23 +14,17 @@ template.innerHTML = `
 class Links extends HTMLElement {
   constructor(){
     super();
-    let blogLink = document.createElement('div');
-    blogLink.id = 'blogLink';
-    let ipnsA = document.createElement('a');
-    blogLink.appendChild(ipnsA);
-
-    let latestLink = document.createElement('div');
-    latestLink.id = 'latestLink';
-    let latestLinkA = document.createElement('a');
-    latestLink.appendChild(latestLinkA);
-
-    this._publishButton = document.createElement('button');
-    this._publishButton.innerHTML = 'Publish to IPNS';
-
-    this._root = this.attachShadow({mode: 'open'})
-    this._root.appendChild(blogLink);
-    this._root.appendChild(latestLink);
-    this._root.appendChild(this._publishButton);
+    this._root = this.attachShadow({mode: 'open'});
+    this._root.innerHTML = `
+      <style>
+        a {
+          overflow-wrap: anywhere;
+        }
+      </style>
+    `;
+    let node = template.content.cloneNode(true);
+    this._root.appendChild(node);
+    this._publishButton = this._root.querySelector('button');
   }
 
   connectedCallback(){
@@ -46,7 +40,15 @@ class Links extends HTMLElement {
     this._render();
   }
 
+  static get observedAttributes() { return ['ipns', 'lastCid']; }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    this._render();
+  }
+
   _render(){
+    console.log("blog-links._render");
+    console.log(window.localStorage.lastCid);
     if (window.localStorage.ipns){
       let ipns = window.localStorage.ipns;
       const url = `${ipns}/index.md`;
@@ -66,6 +68,7 @@ class Links extends HTMLElement {
       this._root.querySelector('button').removeAttribute('disabled');
     }
   }
+
 }
 customElements.define('blog-links', Links);
 
