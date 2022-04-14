@@ -6,8 +6,8 @@ const templateItem = document.createElement('template');
 templateItem.innerHTML = `
     <li class="item">
       <a></a>
-      <div class="date"></div>
-      <div class="excerpt"></div>
+      <span class="date"></span>
+      <p class="excerpt"></p>
       <button class="destroy">🗑</button>
     </li>
 `;
@@ -23,9 +23,17 @@ class PostList extends HTMLElement {
         }
         ul > li {
           list-style: none;
+          padding-top: 1em;
+        }
+        li:first-child {
+          padding-top: 0px;
+        }
+        li > a:first-child {
+          font-size: 1.4rem;
+          font-weight: 600;
         }
       </style>
-    `
+    `;
     const container = document.createElement('div');
     container.innerHTML = `<ul class="item-list"></ul>`;
     shadow.appendChild(container);
