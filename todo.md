@@ -1,13 +1,17 @@
 # TODO
-- [x] delete
-- [ ] use templates for web component markup
-- [ ] button to publish to IPNS
-- [ ] Show last published CID
-- [ ] metadata for site (title, anything else?)
+
+- [x] title vs filename
+    - use title, prepend date and append .md for filename - and reverse for display
+- [x] UX for adding posts -> only show form when adding / editing
+- [x] File upload - decide to or just implement
+
 - [ ] UX for starting out
-- [ ] edit
-- [ ] order
-- [ ] dates in files
-- [ ] consider frontmatter or other metadata format for posts
-- [ ] enforce markdown?
-- [ ] abandon blog - aka - start over
+- [ ] post display for blog editor
+- [ ] editing posts - aka load content into editor
+- [ ] UX for publishing and sharing
+    - feedback when updating IPNS
+    - indicate unpublished changes - Show last published CID or just out of date / unsaved
+
+- [ ] metadata for site (title, anything else?)
+- [ ] upload progress (streaming uploads)
+- [ ] use templates for web component markup
