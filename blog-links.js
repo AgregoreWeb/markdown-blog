@@ -40,7 +40,7 @@ class Links extends HTMLElement {
     this._render();
   }
 
-  static get observedAttributes() { return ['ipns', 'lastCid']; }
+  static get observedAttributes() { return ['ipns', 'lastcid']; }
 
   attributeChangedCallback(name, oldValue, newValue) {
     this._render();
@@ -51,7 +51,7 @@ class Links extends HTMLElement {
     console.log(window.localStorage.lastCid);
     if (window.localStorage.ipns){
       let ipns = window.localStorage.ipns;
-      const url = `${ipns}/index.md`;
+      const url = `${ipns}index.md`;
       this._root.querySelector('#blogLink a').text = url;
       this._root.querySelector('#blogLink a').href = url;
     }

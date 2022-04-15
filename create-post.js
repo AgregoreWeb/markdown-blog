@@ -1,8 +1,8 @@
 export default class CreatePost extends HTMLElement {
   constructor() {
     super();
-    this._shadow = this.attachShadow({mode: 'open'})
-    this._shadow.innerHTML = `
+    this._root = this.attachShadow({mode: 'open'})
+    this._root.innerHTML = `
       <style>
         form > div {
           display: flex;
@@ -22,13 +22,13 @@ export default class CreatePost extends HTMLElement {
       </div>
       <input type="submit" value="Create" />
     `;
-    this._shadow.appendChild(form);
+    this._root.appendChild(form);
   }
 
   connectedCallback() {
-    this._shadow.querySelector('form').addEventListener('submit', e => {
+    this._root.querySelector('form').addEventListener('submit', e => {
       e.preventDefault();
-      let filename = this._shadow.querySelector('input[name="filename"]').value;
+      let filename = this._root.querySelector('input[name="filename"]').value;
       if (! filename.match(/\d\d\d\d-\d\d-\d\d-/)){
         let date = new Date().toISOString().slice(0, 10); //YYYY-mm-dd
         filename = `${date}-${filename}`;
@@ -36,10 +36,15 @@ export default class CreatePost extends HTMLElement {
       if (! filename.match(/\.md$/) ){
         filename = `${filename}.md`;
       }
-      let content = this._shadow.querySelector('textarea[name="content"]').value;
+      let content = this._root.querySelector('textarea[name="content"]').value;
       console.log(`CreatePost.connectedCallback.submit ${filename} ${content}`);
       this.dispatchEvent(new CustomEvent('onSubmit', { detail: { filename, content } }));
     });
+  }
+
+  appendText(text) {
+    let textArea = this._root.querySelector('textarea[name=content]');
+    textArea.value = `${textArea.value} ${text}`;
   }
 }
 
