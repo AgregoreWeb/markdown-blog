@@ -11,7 +11,7 @@ template.innerHTML = `
     </div>
 
     <post-list></post-list>
-    <button id="create-post-button">Create post</button>
+    <button id="create-post-button">Create new post</button>
 
     <blog-links></blog-links>
   </div>
@@ -59,9 +59,6 @@ class App extends HTMLElement {
     this._root.querySelector('.close-dialog').addEventListener('click', e => {
       this._createPostDialog.classList.add('hidden');
     });
-  }
-
-  onCreatePostButtonClick(e){
   }
 
   async onPostAdd(e){
