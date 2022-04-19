@@ -52,17 +52,19 @@ export async function thisIsBlog(doFileStuff){
     method: 'DELETE',
       mode: 'cors'
   });
-  let contentUrl = await response.text()
-  let newCid = new URL(contentUrl).host;
+  if (response.status == 200){
+    let contentUrl = await response.text()
+    lastCid = new URL(contentUrl).host;
+  }
 
   // write index.md
-  url = `ipfs://${newCid}/index.md`;
+  url = `ipfs://${lastCid}/index.md`;
   response = await fetch(url, {
     method: 'POST',
     body: indexBody,
     mode: 'cors'
   });
-  contentUrl = await response.text()
+  let contentUrl = await response.text()
   lastCid = new URL(contentUrl).host;
 
   window.localStorage.lastCid = lastCid;

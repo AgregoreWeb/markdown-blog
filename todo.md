@@ -15,3 +15,6 @@
 - [ ] metadata for site (title, anything else?)
 - [ ] upload progress (streaming uploads)
 - [ ] use templates for web component markup
+
+# Bugs
+- [x] Fist post is disappearing?
