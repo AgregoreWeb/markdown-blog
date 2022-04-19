@@ -2,12 +2,13 @@ import {publish} from './lib.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <div id="blogLink">
-    <a></a>
-  </div>
   <div id="latestLink">
     <a></a>
   </div>
+  <div id="blogLink">
+    <a></a>
+  </div>
+  <div id="status"></div>
   <button>Publish to IPNS</button>
 `;
 
@@ -25,6 +26,7 @@ class Links extends HTMLElement {
     let node = template.content.cloneNode(true);
     this._root.appendChild(node);
     this._publishButton = this._root.querySelector('button');
+    this._ipnsInProgress = false;
   }
 
   connectedCallback(){
@@ -35,8 +37,14 @@ class Links extends HTMLElement {
   async onPublishClick(e){
     e.preventDefault();
     console.log('onPublishClick');
+    this._ipnsInProgress = true;
+    this._render();
     let cidToPublish = window.localStorage.lastCid;
-    let ipns = await publish(cidToPublish);
+    let ipns = await publish(cidToPublish).catch((err) => {
+      console.log('publish(cid) failed');
+      this._ipnsInProgress = false;
+    });
+    this._ipnsInProgress = false;
     this._render();
   }
 
@@ -61,6 +69,22 @@ class Links extends HTMLElement {
       this._root.querySelector('#latestLink a').text = `ipfs://${lastCid}/index.md`;
       this._root.querySelector('#latestLink a').href = `ipfs://${lastCid}/index.md`;
     }
+
+    if (!window.localStorage.lastCid ){
+      this._publishButton.style.display = 'none'
+    } else {
+      this._publishButton.style.display = 'inline-block'
+    }
+
+    let status = this._root.querySelector('#status');
+    if (this._ipnsInProgress) {
+      status.innerText = 'IPNS update in progress';
+    } else if (!!window.localStorage.lastPublishedCid && window.localStorage.lastPublishedCid == window.localStorage.lastCid){
+      status.innerText = 'IPNS link up to date';
+    } else {
+      status.innerText = 'Latest version of blog not published';
+    }
+
 
     if (!!window.localStorage.lastPublishedCid && window.localStorage.lastPublishedCid == window.localStorage.lastCid) {
       this._root.querySelector('button').setAttribute('disabled', '');
