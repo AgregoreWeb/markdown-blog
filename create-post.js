@@ -3,6 +3,7 @@ export default class CreatePost extends HTMLElement {
     super();
     this._root = this.attachShadow({mode: 'open'})
     this._root.innerHTML = `
+      <link href="index.css" rel="stylesheet">
       <style>
         form > div {
           display: flex;

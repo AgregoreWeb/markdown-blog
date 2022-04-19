@@ -1,34 +1,34 @@
 import {postAdd, removeFile, publish, mediaAdd} from './lib.js';
 
-const template = document.createElement('template');
-template.innerHTML = `
-  <div>
-    <div id="create-post-dialog" class="hidden dialog">
-      <h1>Create a new post</h1>
-      <a class="close-dialog" role="button" href="#">&lt;&lt; back</a>
-      <create-post></create-post>
-      <file-upload></file-upload>
-    </div>
-
-    <post-list></post-list>
-    <button id="create-post-button">Create new post</button>
-
-    <blog-links></blog-links>
-  </div>
-`;
-
 class App extends HTMLElement {
   constructor(){
     super();
 
     this._root = this.attachShadow({mode: 'open'});
     this._root.innerHTML = `
+      <link href="index.css" rel="stylesheet">
       <style>
-        .hidden { display: none; }
+        .container { 
+          display: flex;
+          flex-direction: column;
+        }
         .dialog { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; padding: 1rem; box-sizing: border-box;}
+        #create-post-button { margin-bottom: 1rem };
       </style>
+      <div class="container">
+        <div id="create-post-dialog" class="hidden dialog">
+          <h1>Create a new post</h1>
+          <a class="close-dialog button" role="button" href="#">&lt;&lt; back</a>
+          <create-post></create-post>
+          <file-upload></file-upload>
+        </div>
+  
+        <post-list></post-list>
+        <button id="create-post-button">Create new post</button>
+  
+        <blog-links></blog-links>
+      </div>
     `;
-    this._root.appendChild(template.content.cloneNode(true));
     this._links = this._root.querySelector('blog-links');
     this._postList = this._root.querySelector('post-list');
     this._postList.setAttribute('cid', window.localStorage.lastCid);

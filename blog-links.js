@@ -17,6 +17,7 @@ class Links extends HTMLElement {
     super();
     this._root = this.attachShadow({mode: 'open'});
     this._root.innerHTML = `
+      <link href="index.css" rel="stylesheet">
       <style>
         a {
           overflow-wrap: anywhere;

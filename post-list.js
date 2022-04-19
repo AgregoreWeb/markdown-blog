@@ -5,10 +5,12 @@ const templateItem = document.createElement('template');
 // TODO - update for new mockup. Where to put link?
 templateItem.innerHTML = `
     <li class="item">
-      <a></a>
+      <h3></h3>
       <span class="date"></span>
       <p class="excerpt"></p>
-      <button class="destroy">🗑</button>
+      <a class="button">View</a>
+      <button class="edit">Edit</button>
+      <button class="delete">🗑 Delete</button>
     </li>
 `;
 
@@ -17,20 +19,15 @@ class PostList extends HTMLElement {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
     shadow.innerHTML = `
+      <link href="index.css" rel="stylesheet">
       <style>
         ul {
           padding-inline-start: 0;
         }
-        ul > li {
-          list-style: none;
-          padding-top: 1em;
-        }
-        li:first-child {
-          padding-top: 0px;
-        }
-        li > a:first-child {
+        li > h3 {
           font-size: 1.4rem;
           font-weight: 600;
+          margin-bottom: 0.4rem;
         }
       </style>
     `;
@@ -55,18 +52,19 @@ class PostList extends HTMLElement {
   _render(){
     let postList = [];
     for (let f of this._files){
-      let itemNode = templateItem.content.cloneNode(true)
+      const itemNode = templateItem.content.cloneNode(true)
       postList = [...postList, itemNode];
+      const {filename, content, link, title, date} = f;
 
-      let {filename, content, link, title, date} = f;
-      let a = itemNode.querySelector('a');
-      a.href = link;
-      a.textContent = title;
-      let dateDiv = itemNode.querySelector('.date');
+      const h3 = itemNode.querySelector('h3');
+      h3.textContent = title;
+      const dateDiv = itemNode.querySelector('.date');
       dateDiv.textContent = date;
-      let ex = itemNode.querySelector('.excerpt');
+      const ex = itemNode.querySelector('.excerpt');
       ex.textContent = content;
-      let deleteButton = itemNode.querySelector('button');
+      const a = itemNode.querySelector('a');
+      a.href = link;
+      const deleteButton = itemNode.querySelector('button.delete');
       deleteButton.addEventListener('click', (e) => {
         this.dispatchEvent(new CustomEvent('onRemove', { detail: {filename} }));
       });

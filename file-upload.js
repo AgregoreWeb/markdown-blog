@@ -3,6 +3,7 @@ class FileUpload extends HTMLElement {
     super();
     this._root = this.attachShadow({ mode: 'open' });
     this._root.innerHTML = `
+      <link href="index.css" rel="stylesheet">
       <form enctype="multipart/form-data">
         <input type="file" name="file" />
         <button type="submit">Upload</button>
