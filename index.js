@@ -4,8 +4,7 @@ class App extends HTMLElement {
   constructor(){
     super();
 
-    this._root = this.attachShadow({mode: 'open'});
-    this._root.innerHTML = `
+    this.innerHTML = `
       <link href="index.css" rel="stylesheet">
       <style>
         .container { 
@@ -34,11 +33,11 @@ class App extends HTMLElement {
         <blog-links></blog-links>
       </div>
     `;
-    this._links = this._root.querySelector('blog-links');
-    this._postList = this._root.querySelector('post-list');
+    this._links = this.querySelector('blog-links');
+    this._postList = this.querySelector('post-list');
     this._postList.setAttribute('cid', window.localStorage.lastCid);
-    this._postFormDialog = this._root.querySelector('#create-post-dialog');
-    this._postForm =  this._root.querySelector('post-form');
+    this._postFormDialog = this.querySelector('#create-post-dialog');
+    this._postForm =  this.querySelector('post-form');
     if (window.localStorage.ipns){
       this._links.setAttribute('ipns', window.localStorage.ipns)
     }
@@ -60,7 +59,7 @@ class App extends HTMLElement {
       this._postFormDialog.classList.remove('hidden');
     });
 
-    const createPostButton = this._root.querySelector('#create-post-button');
+    const createPostButton = this.querySelector('#create-post-button');
     createPostButton.addEventListener('click', e => {
       this._postForm.reset();
       this._postForm.removeAttribute('filename');
@@ -68,7 +67,7 @@ class App extends HTMLElement {
       this._postFormDialog.classList.remove('hidden');
     });
 
-    this._root.querySelector('.close-dialog').addEventListener('click', e => {
+    this.querySelector('.close-dialog').addEventListener('click', e => {
       this._postFormDialog.classList.add('hidden');
     });
   }
@@ -105,7 +104,11 @@ class App extends HTMLElement {
     const {file} = e.detail;
     console.log(`onFileUpload file.name=${file.name}`);
     let lastCid = await mediaAdd(file);
-    this._postForm.appendText(`![${file.name}](/media/${file.name})`);
+    if (file.type.startsWith('image/')){
+      this._postForm.appendText(`![${file.name}](/media/${file.name})`);
+    } else {
+      this._postForm.appendText(`[${file.name}](/media/${file.name})`);
+    }
     this._postList.setAttribute('cid', lastCid);
     this._links.setAttribute('lastcid', lastCid);
   }
