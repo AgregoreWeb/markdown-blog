@@ -19,7 +19,7 @@ class App extends HTMLElement {
         <div id="create-post-dialog" class="hidden dialog">
           <h1>Create a new post</h1>
           <a class="close-dialog button" role="button" href="#">&lt;&lt; back</a>
-          <create-post></create-post>
+          <post-form></post-form>
           <file-upload></file-upload>
         </div>
   
@@ -33,7 +33,7 @@ class App extends HTMLElement {
     this._postList = this._root.querySelector('post-list');
     this._postList.setAttribute('cid', window.localStorage.lastCid);
     this._createPostDialog = this._root.querySelector('#create-post-dialog');
-    this._createPost =  this._root.querySelector('create-post');
+    this._createPost =  this._root.querySelector('post-form');
     this._fileUpload = this._root.querySelector('file-upload');
     if (window.localStorage.ipns){
       this._links.setAttribute('ipns', window.localStorage.ipns)

@@ -49,4 +49,4 @@ export default class CreatePost extends HTMLElement {
   }
 }
 
-customElements.define('create-post', CreatePost);
+customElements.define('post-form', CreatePost);
