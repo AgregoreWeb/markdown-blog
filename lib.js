@@ -15,10 +15,20 @@ export async function publish(cid){
   return ipns;
 }
 
+export function parseFilename(filename){
+  let date = filename.slice(0, 10);
+  let title = decodeURIComponent(filename.slice(11)).replace(/\.md$/, '');
+  return { date, title };
+}
+
+export function filenameToTitle(filename){
+  return decodeURIComponent(filename.slice(11)).replace(/\.md$/, '');
+}
+
 function parseMeta(file){
   return {
     ...file,
-    title: decodeURIComponent(file.filename.slice(11)).replace(/\.md$/, ''),
+    title: filenameToTitle(file.filename),
     date: file.filename.slice(0, 10),
     excerpt: file.content.slice(0, Math.min(file.content.indexOf('\n'), 100)),
   }
@@ -113,6 +123,42 @@ export async function postAdd(file, filename){
   }
 
   lastCid = await thisIsBlog(_addFile);
+  return lastCid;
+}
+
+export async function postUpdate(file, filename, originalFilename){
+  let lastCid = window.localStorage.getItem('lastCid');
+
+  const _removeFile = async cid => {
+    let url = `ipfs://${cid}/ipmb-db/${originalFilename}`
+    console.log(`DELETING ${url}`);
+    let response = await fetch(url, {
+      method: 'DELETE',
+      mode: 'cors'
+    });
+    let contentUrl = await response.text()
+    let newCid = new URL(contentUrl).host;
+    return newCid;
+  }
+
+  const _addFile = async cid => {
+    let url = `ipfs://${cid?cid:''}/ipmb-db/${filename}`
+    console.log(`ADDING ${url}`);
+    let response = await fetch(url, {
+      method: 'POST',
+      body: file,
+      mode: 'cors'
+    });
+    let contentUrl = await response.text()
+    return new URL(contentUrl).host;
+  }
+
+  const _chain = async () => {
+    let cid = await _removeFile(lastCid);
+    return await _addFile(cid);
+  }
+
+  lastCid = await thisIsBlog(_chain);
   return lastCid;
 }
 
