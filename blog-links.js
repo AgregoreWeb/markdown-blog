@@ -1,5 +1,13 @@
 import {publish} from './lib.js';
 
+/* TODO
+ * Rework this component. There are the following states:
+ * - no files created yet - show nothing
+ * - content updated, nothing published - show 'publish your blog'
+ * - content updated, older version published - show 'publish latest changes to blog'
+ * - latest content published - show 'view blog at'
+ */
+
 const template = document.createElement('template');
 template.innerHTML = `
   <div id="latestLink">
@@ -21,6 +29,10 @@ class Links extends HTMLElement {
       <style>
         a {
           overflow-wrap: anywhere;
+        }
+        :host {
+          padding: 0.5em;
+          background-color: lightgrey;
         }
       </style>
     `;
@@ -87,7 +99,7 @@ class Links extends HTMLElement {
     }
 
 
-    if (!!window.localStorage.lastPublishedCid && window.localStorage.lastPublishedCid == window.localStorage.lastCid) {
+    if (this._ipnsInProgress || !!window.localStorage.lastPublishedCid && window.localStorage.lastPublishedCid == window.localStorage.lastCid) {
       this._root.querySelector('button').setAttribute('disabled', '');
     } else {
       this._root.querySelector('button').removeAttribute('disabled');
