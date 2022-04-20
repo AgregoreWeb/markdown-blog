@@ -54,18 +54,21 @@ class PostList extends HTMLElement {
     for (let f of this._files){
       const itemNode = templateItem.content.cloneNode(true)
       postList = [...postList, itemNode];
-      const {filename, content, link, title, date} = f;
+      const {filename, content, link, title, date, excerpt} = f;
 
       const h3 = itemNode.querySelector('h3');
       h3.textContent = title;
       const dateDiv = itemNode.querySelector('.date');
       dateDiv.textContent = date;
       const ex = itemNode.querySelector('.excerpt');
-      ex.textContent = content;
+      ex.textContent = excerpt;
       const a = itemNode.querySelector('a');
       a.href = link;
+      itemNode.querySelector('button.edit').addEventListener('click', e => {
+        this.dispatchEvent(new CustomEvent('onPostEdit', { detail: {filename, content} }));
+      });
       const deleteButton = itemNode.querySelector('button.delete');
-      deleteButton.addEventListener('click', (e) => {
+      deleteButton.addEventListener('click', e => {
         this.dispatchEvent(new CustomEvent('onRemove', { detail: {filename} }));
       });
     }
