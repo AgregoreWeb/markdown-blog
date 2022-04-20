@@ -2,7 +2,6 @@ import {loadContent} from './lib.js';
 
 const templateItem = document.createElement('template');
 
-// TODO - update for new mockup. Where to put link?
 templateItem.innerHTML = `
     <li class="item">
       <h3></h3>
@@ -17,9 +16,7 @@ templateItem.innerHTML = `
 class PostList extends HTMLElement {
   constructor() {
     super();
-    const shadow = this.attachShadow({ mode: 'open' });
-    shadow.innerHTML = `
-      <link href="index.css" rel="stylesheet">
+    this.innerHTML = `
       <style>
         ul {
           padding-inline-start: 0;
@@ -33,8 +30,7 @@ class PostList extends HTMLElement {
     `;
     const container = document.createElement('div');
     container.innerHTML = `<ul class="item-list"></ul>`;
-    shadow.appendChild(container);
-    this._root = shadow;
+    this.appendChild(container);
   }
 
   async connectedCallback() {
@@ -72,10 +68,9 @@ class PostList extends HTMLElement {
         this.dispatchEvent(new CustomEvent('onRemove', { detail: {filename} }));
       });
     }
-    let domList = this.shadowRoot.querySelector('.item-list');
+    let domList = this.querySelector('.item-list');
     domList.replaceChildren(...postList);
   }
-
 }
 customElements.define('post-list', PostList);
 
