@@ -36,13 +36,13 @@ function parseMeta(file){
 
 
 // Create markdown blog based on data stored in lastCid
-export async function thisIsBlog(doFileStuff){
+export async function createBlogIndex(contentUpdateFunction){
 
   let lastCid = window.localStorage.lastCid;
   const previousCid = lastCid;
  
   // make the update
-  lastCid = await doFileStuff();
+  lastCid = await contentUpdateFunction();
 
   // get content and update index
   let files = await _fetchFolder(lastCid);
@@ -101,7 +101,7 @@ export async function removeFile(filename){
     return newCid;
   }
 
-  lastCid = await thisIsBlog(_removeFile);
+  lastCid = await createBlogIndex(_removeFile);
   return lastCid;
 
 }
@@ -123,7 +123,7 @@ export async function postAdd(file, filename){
     return new URL(contentUrl).host;
   }
 
-  lastCid = await thisIsBlog(_addFile);
+  lastCid = await createBlogIndex(_addFile);
   return lastCid;
 }
 
@@ -159,7 +159,7 @@ export async function postUpdate(file, filename, originalFilename){
     return await _addFile(cid);
   }
 
-  lastCid = await thisIsBlog(_chain);
+  lastCid = await createBlogIndex(_chain);
   return lastCid;
 }
 
