@@ -1,11 +1,9 @@
 class FileUpload extends HTMLElement {
   constructor(){
     super();
-    this._root = this.attachShadow({ mode: 'open' });
-    this._root.innerHTML = `
-      <link href="index.css" rel="stylesheet">
+    this.innerHTML = `
       <style>
-        .button {
+        .fileButton {
           position: relative;
         }
         input[type='file'] {
@@ -18,7 +16,7 @@ class FileUpload extends HTMLElement {
         }
       </style>
       <form enctype="multipart/form-data">
-        <span class="button">
+        <span class="button fileButton">
           Insert image
           <input type="file" name="file" />
         </span>
@@ -27,10 +25,10 @@ class FileUpload extends HTMLElement {
   }
 
   connectedCallback() {
-    this._root.querySelector('input[type=file]').addEventListener('change', e => {
+    this.querySelector('input[type=file]').addEventListener('change', e => {
       e.preventDefault();
       console.log('uploading file');
-      let file = this._root.querySelector('input[type=file]').files[0];
+      let file = this.querySelector('input[type=file]').files[0];
       if (!!file) {
         this.dispatchEvent(new CustomEvent('onFileSelected', { detail: {file} }));
       };

@@ -10,35 +10,35 @@ import {publish} from './lib.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <div id="latestLink">
-    <a></a>
+  <div id="blogLinks">
+    <div id="latestLink">
+      <a></a>
+    </div>
+    <div id="blogLink">
+      <a></a>
+    </div>
+    <div id="status"></div>
+    <button>Publish to IPNS</button>
   </div>
-  <div id="blogLink">
-    <a></a>
-  </div>
-  <div id="status"></div>
-  <button>Publish to IPNS</button>
 `;
 
 class Links extends HTMLElement {
   constructor(){
     super();
-    this._root = this.attachShadow({mode: 'open'});
-    this._root.innerHTML = `
-      <link href="index.css" rel="stylesheet">
+    this.innerHTML = `
       <style>
-        a {
+        #blogLinks a {
           overflow-wrap: anywhere;
         }
-        :host {
+        #blogLinks {
           padding: 0.5em;
           background-color: lightgrey;
         }
       </style>
     `;
     let node = template.content.cloneNode(true);
-    this._root.appendChild(node);
-    this._publishButton = this._root.querySelector('button');
+    this.appendChild(node);
+    this._publishButton = this.querySelector('button');
     this._ipnsInProgress = false;
   }
 
@@ -73,14 +73,14 @@ class Links extends HTMLElement {
     if (window.localStorage.ipns){
       let ipns = window.localStorage.ipns;
       const url = `${ipns}index.md`;
-      this._root.querySelector('#blogLink a').text = url;
-      this._root.querySelector('#blogLink a').href = url;
+      this.querySelector('#blogLink a').text = url;
+      this.querySelector('#blogLink a').href = url;
     }
 
     if (window.localStorage.lastCid){
       let lastCid = window.localStorage.lastCid;
-      this._root.querySelector('#latestLink a').text = `ipfs://${lastCid}/index.md`;
-      this._root.querySelector('#latestLink a').href = `ipfs://${lastCid}/index.md`;
+      this.querySelector('#latestLink a').text = `ipfs://${lastCid}/index.md`;
+      this.querySelector('#latestLink a').href = `ipfs://${lastCid}/index.md`;
     }
 
     if (!window.localStorage.lastCid ){
@@ -89,7 +89,7 @@ class Links extends HTMLElement {
       this._publishButton.style.display = 'inline-block'
     }
 
-    let status = this._root.querySelector('#status');
+    let status = this.querySelector('#status');
     if (this._ipnsInProgress) {
       status.innerText = 'IPNS update in progress';
     } else if (!!window.localStorage.lastPublishedCid && window.localStorage.lastPublishedCid == window.localStorage.lastCid){
@@ -100,9 +100,9 @@ class Links extends HTMLElement {
 
 
     if (this._ipnsInProgress || !!window.localStorage.lastPublishedCid && window.localStorage.lastPublishedCid == window.localStorage.lastCid) {
-      this._root.querySelector('button').setAttribute('disabled', '');
+      this.querySelector('button').setAttribute('disabled', '');
     } else {
-      this._root.querySelector('button').removeAttribute('disabled');
+      this.querySelector('button').removeAttribute('disabled');
     }
   }
 
