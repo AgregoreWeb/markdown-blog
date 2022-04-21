@@ -20,16 +20,21 @@ export function parseFilename (filename) {
   return { date, title };
 }
 
-export function filenameToTitle (filename) {
-  return decodeURIComponent(filename.slice(11)).replace(/\.md$/, '');
+function excerpt (content) {
+  let excerpt_ = content.slice(0, 100);
+  if (excerpt_.indexOf('\n') > 0) {
+    excerpt_ = excerpt_.slice(0, excerpt_.indexOf('\n')+1);
+  }
+  return excerpt_;
 }
 
 function parseMeta (file) {
+  const { date, title } = parseFilename(file.filename);
   return {
     ...file,
-    title: filenameToTitle(file.filename),
-    date: file.filename.slice(0, 10),
-    excerpt: file.content.slice(0, Math.min(file.content.indexOf('\n'), 100))
+    title,
+    date,
+    excerpt: excerpt(file.content),
   };
 }
 
