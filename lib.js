@@ -112,7 +112,8 @@ export async function postAdd(file, filename){
   let lastCid = window.localStorage.lastCid;
 
   const _addFile = async () => {
-    let url = `ipfs://${lastCid?lastCid:''}/ipmb-db/${filename}`
+    const EMPTY_DIRECTORY_CID = 'bafybeiczsscdsbs7ffqz55asqdf3smv6klcw3gofszvwlyarci47bgf354';
+    const url = `ipfs://${lastCid || EMPTY_DIRECTORY_CID}/ipmb-db/${filename}`
     console.log(`ADDING ${url}`);
     let response = await fetch(url, {
       method: 'POST',
@@ -143,7 +144,7 @@ export async function postUpdate(file, filename, originalFilename){
   }
 
   const _addFile = async cid => {
-    let url = `ipfs://${cid?cid:''}/ipmb-db/${filename}`
+    const url = `ipfs://${cid}/ipmb-db/${filename}`
     console.log(`ADDING ${url}`);
     let response = await fetch(url, {
       method: 'POST',
