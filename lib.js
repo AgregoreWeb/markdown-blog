@@ -1,5 +1,5 @@
 // TODO
-// - decide where to update window.localstorage.{lastCid,ipns,lastPublishedCid}
+// - decide where to update window.localstorage.{lastCid,ipns,ipnsCid}
 // - make function names consistent nounVerb or verbNoun
 
 export async function publish (cid) {
@@ -10,7 +10,7 @@ export async function publish (cid) {
   const ipns = await r.text();
   const updateHtml = !window.localStorage.ipns;
   window.localStorage.ipns = ipns;
-  window.localStorage.lastPublishedCid = cid;
+  window.localStorage.ipnsCid = cid;
   return ipns;
 }
 

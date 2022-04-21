@@ -1,24 +1,12 @@
 import { publish } from './lib.js';
 
-/* TODO
- * Rework this component. There are the following states:
- * - no files created yet - show nothing
- * - content updated, nothing published - show 'publish your blog'
- * - content updated, older version published - show 'publish latest changes to blog'
- * - latest content published - show 'view blog at'
- */
-
 const template = document.createElement('template');
 template.innerHTML = `
   <div id="blogLinks">
-    <div id="latestLink">
-      <a></a>
-    </div>
-    <div id="blogLink">
-      <a></a>
-    </div>
-    <div id="status"></div>
     <button>Publish to IPNS</button>
+    <p id="status"></p>
+    <div id="ipnsLink"><a></a></div>
+    <div id="latestLink"><a></a></div>
   </div>
 `;
 
@@ -39,6 +27,9 @@ class Links extends HTMLElement {
     const node = template.content.cloneNode(true);
     this.appendChild(node);
     this._publishButton = this.querySelector('button');
+    this._status = this.querySelector('#status');
+    this._ipnsLink = this.querySelector('#ipnsLink > a');
+    this._latestLink = this.querySelector('#latestLink > a');
     this._ipnsInProgress = false;
   }
 
@@ -68,40 +59,51 @@ class Links extends HTMLElement {
   }
 
   _render () {
-    console.log('blog-links._render');
-    console.log(window.localStorage.lastCid);
-    if (window.localStorage.ipns) {
-      const ipns = window.localStorage.ipns;
-      const url = `${ipns}index.md`;
-      this.querySelector('#blogLink a').text = url;
-      this.querySelector('#blogLink a').href = url;
+    const lastCid = window.localStorage.lastCid;
+    const ipns = window.localStorage.ipns;
+    const ipnsCid = window.localStorage.ipnsCid;
+
+    if (!lastCid) {
+      this.classList.add('hidden');
+      return;
+    } 
+
+    this.classList.remove('hidden');
+    if (!ipns){
+      // publish your blog
+      this._publishButton.textContent = 'Publish your blog';
+      this._status.innerText = 'Your blog is not yet published';
+      this._latestLink.text = `Preview latest changes`;
+      this._latestLink.href = `ipfs://${lastCid}/index.md`;
+    } else if (lastCid != ipnsCid) {
+      // update your blog
+      this._status.innerText = 'There are unpublished changes to your blog';
+      // update
+      this._publishButton.textContent = 'Publish latest changes';
+      // last published version
+      this._ipnsLink.text = 'View last published version';
+      this._ipnsLink.href = `${ipns}index.md`;
+      // latest changes
+      this._latestLink.text = `Preview latest changes`;
+      this._latestLink.href = `ipfs://${lastCid}/index.md`;
+    } else if (lastCid == ipnsCid) {
+      // view your blog
+      this._status.innerText = 'You can share the link below with other users';
+      this._publishButton.textContent = 'Publish latest changes';
+      this._ipnsLink.text = 'View blog';
+      this._ipnsLink.href = `${ipns}index.md`;
+      this._latestLink.text = '';
+      this._latestLink.href = '';
     }
 
-    if (window.localStorage.lastCid) {
-      const lastCid = window.localStorage.lastCid;
-      this.querySelector('#latestLink a').text = `ipfs://${lastCid}/index.md`;
-      this.querySelector('#latestLink a').href = `ipfs://${lastCid}/index.md`;
-    }
-
-    if (!window.localStorage.lastCid) {
-      this._publishButton.style.display = 'none';
-    } else {
-      this._publishButton.style.display = 'inline-block';
-    }
-
-    const status = this.querySelector('#status');
     if (this._ipnsInProgress) {
-      status.innerText = 'IPNS update in progress';
-    } else if (!!window.localStorage.lastPublishedCid && window.localStorage.lastPublishedCid == window.localStorage.lastCid) {
-      status.innerText = 'IPNS link up to date';
-    } else {
-      status.innerText = 'Latest version of blog not published';
+      this._status.innerHTML = 'IPNS update in progress <div class="lds-dual-ring"></div>';
     }
 
-    if (this._ipnsInProgress || !!window.localStorage.lastPublishedCid && window.localStorage.lastPublishedCid == window.localStorage.lastCid) {
-      this.querySelector('button').setAttribute('disabled', '');
+    if (this._ipnsInProgress || ipnsCid == lastCid) {
+      this._publishButton.setAttribute('disabled', '');
     } else {
-      this.querySelector('button').removeAttribute('disabled');
+      this._publishButton.removeAttribute('disabled');
     }
   }
 }
