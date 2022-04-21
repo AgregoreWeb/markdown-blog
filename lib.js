@@ -190,16 +190,16 @@ async function _fetchFolder(cid){
   let d = await r.json();
   d = d.filter( e => !!e); // empty dir returns `[ null ]`
 
-  let files = [];
-  for (let filename of d){
+  const files = await Promise.all(d.map(async filename => {
     let fileRequest = await fetch(`ipfs://${cid}/ipmb-db/${filename}`);
     let content = await fileRequest.text();
-    files.push({
+    return {
       filename, 
       content,
       link: `ipfs://${cid}/ipmb-db/${filename}`,
-    });
-  }
+    };
+  }));
+
   return files;
 }
 
