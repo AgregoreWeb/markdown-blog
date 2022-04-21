@@ -89,7 +89,8 @@ export async function removeFile(filename){
   let lastCid = window.localStorage.lastCid;
 
   const _removeFile = async ( ) => {
-    let url = `ipfs://${lastCid?lastCid:''}/ipmb-db/${filename}`
+    const EMPTY_DIRECTORY_CID = 'bafybeiczsscdsbs7ffqz55asqdf3smv6klcw3gofszvwlyarci47bgf354';
+    let url = `ipfs://${lastCid || EMPTY_DIRECTORY_CID}/ipmb-db/${filename}`
     console.log(`DELETING ${url}`);
     let response = await fetch(url, {
       method: 'DELETE',
