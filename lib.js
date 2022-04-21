@@ -50,10 +50,10 @@ export async function thisIsBlog(doFileStuff){
   let indexBody = '';
   for (let post of files){
     // this should probably be a relative link
-    indexBody = indexBody.concat(`- **[${post.title}](/ipmb-db/${post.filename})** (posted ${post.date}) - ${post.excerpt}\n`)
+    indexBody += `- **[${post.title}](/ipmb-db/${post.filename})** (posted ${post.date}) - ${post.excerpt}\n`;
   }
   if (previousCid && previousCid != ''){
-    indexBody = indexBody.concat(`\n[previous version of this blog](ipfs://${previousCid}/index.md)`)
+    indexBody += `\n[previous version of this blog](ipfs://${previousCid}/index.md)`;
   }
 
   // delete old index.md
