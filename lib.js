@@ -38,7 +38,7 @@ function parseMeta(file){
 // Create markdown blog based on data stored in lastCid
 export async function thisIsBlog(doFileStuff){
 
-  let lastCid = window.localStorage.getItem('lastCid');
+  let lastCid = window.localStorage.lastCid;
   const previousCid = lastCid;
  
   // make the update
@@ -86,7 +86,7 @@ export async function thisIsBlog(doFileStuff){
 
 export async function removeFile(filename){
 
-  let lastCid = window.localStorage.getItem('lastCid');
+  let lastCid = window.localStorage.lastCid;
 
   const _removeFile = async ( ) => {
     let url = `ipfs://${lastCid?lastCid:''}/ipmb-db/${filename}`
@@ -108,7 +108,7 @@ export async function removeFile(filename){
 // Adds a post and regenerates the index
 export async function postAdd(file, filename){
 
-  let lastCid = window.localStorage.getItem('lastCid');
+  let lastCid = window.localStorage.lastCid;
 
   const _addFile = async () => {
     let url = `ipfs://${lastCid?lastCid:''}/ipmb-db/${filename}`
@@ -127,7 +127,7 @@ export async function postAdd(file, filename){
 }
 
 export async function postUpdate(file, filename, originalFilename){
-  let lastCid = window.localStorage.getItem('lastCid');
+  let lastCid = window.localStorage.lastCid;
 
   const _removeFile = async cid => {
     let url = `ipfs://${cid}/ipmb-db/${originalFilename}`
@@ -164,7 +164,7 @@ export async function postUpdate(file, filename, originalFilename){
 
 // Add media
 export async function mediaAdd(file){
-  let lastCid = window.localStorage.getItem('lastCid');
+  let lastCid = window.localStorage.lastCid;
   let url = `ipfs://${lastCid?lastCid:''}/media/${file.name}`
   console.log(`ADDING ${url}`);
   let response = await fetch(url, {
@@ -203,7 +203,7 @@ async function _fetchFolder(cid){
 
 
 export async function loadContent(){
-  let lastCid = window.localStorage.getItem('lastCid');
+  let lastCid = window.localStorage.lastCid;
   if (!lastCid || lastCid == ''){
     return [];
   };
