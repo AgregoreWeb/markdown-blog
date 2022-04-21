@@ -45,8 +45,7 @@ export async function createBlogIndex(contentUpdateFunction){
   lastCid = await contentUpdateFunction();
 
   // get content and update index
-  let files = await _fetchFolder(lastCid);
-  files = files.map(parseMeta);
+  let files = await _fetchPosts(lastCid);
   let indexBody = '';
   for (let post of files){
     // this should probably be a relative link
@@ -179,25 +178,19 @@ export async function mediaAdd(file){
   return window.localStorage.lastCid;
 }
 
-// list files in dir
-// TODO remove hard-coded /ipmb-db and pass as parameter
-async function _fetchFolder(cid){
-  let r = await fetch(`ipfs://${cid}/ipmb-db/`, {
-    headers: {
-      'X-Resolve': 'none',
-    }
-  });
-  let d = await r.json();
-  d = d.filter( e => !!e); // empty dir returns `[ null ]`
+async function _fetchPosts(cid){
+  let request = await fetch(`ipfs://${cid}/ipmb-db/?noResolve`);
+  let dirList = await request.json();
+  dirList = dirList.filter( e => !!e); // empty dir returns `[ null ]`
 
-  const files = await Promise.all(d.map(async filename => {
+  const files = await Promise.all(dirList.map(async filename => {
     let fileRequest = await fetch(`ipfs://${cid}/ipmb-db/${filename}`);
     let content = await fileRequest.text();
-    return {
+    return parseMeta({
       filename, 
       content,
       link: `ipfs://${cid}/ipmb-db/${filename}`,
-    };
+    });
   }));
 
   return files;
@@ -210,8 +203,6 @@ export async function loadContent(){
     return [];
   };
 
-  let files = await _fetchFolder(lastCid);
-  files = files.map(parseMeta);
-  console.log(files);
+  let files = await _fetchPosts(lastCid);
   return files;
 }
