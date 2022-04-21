@@ -1,7 +1,7 @@
-import {postAdd, postUpdate, removeFile, publish, mediaAdd} from './lib.js';
+import { postAdd, postUpdate, removeFile, publish, mediaAdd } from './lib.js';
 
 class App extends HTMLElement {
-  constructor(){
+  constructor () {
     super();
 
     this.innerHTML = `
@@ -37,22 +37,22 @@ class App extends HTMLElement {
     this._postList = this.querySelector('post-list');
     this._postList.setAttribute('cid', window.localStorage.lastCid);
     this._postFormDialog = this.querySelector('#create-post-dialog');
-    this._postForm =  this.querySelector('post-form');
-    if (window.localStorage.ipns){
-      this._links.setAttribute('ipns', window.localStorage.ipns)
+    this._postForm = this.querySelector('post-form');
+    if (window.localStorage.ipns) {
+      this._links.setAttribute('ipns', window.localStorage.ipns);
     }
-    if (window.localStorage.lastCid){
+    if (window.localStorage.lastCid) {
       this._links.setAttribute('lastCid', window.localStorage.lastCid);
     }
   }
 
-  connectedCallback(){
+  connectedCallback () {
     this._postForm.addEventListener('onSubmit', this.onPostAdd.bind(this));
     this._postForm.addEventListener('onFileUpload', this.onFileUpload.bind(this));
     this._postList.addEventListener('onRemove', this.onPostRemove.bind(this));
 
     this._postList.addEventListener('onPostEdit', e => {
-      const {filename, content} = e.detail;
+      const { filename, content } = e.detail;
       this._postForm.reset();
       this._postForm.setAttribute('filename', filename);
       this._postForm.setAttribute('content', content);
@@ -72,14 +72,14 @@ class App extends HTMLElement {
     });
   }
 
-  async onPostAdd(e){
-    const {originalFilename, filename, content} = e.detail;
+  async onPostAdd (e) {
+    const { originalFilename, filename, content } = e.detail;
     console.log(`submitForm ${originalFilename} ${filename} ${content}`);
-    var file = new File([content], filename, {
-      type: "text/plain",
+    const file = new File([content], filename, {
+      type: 'text/plain'
     });
     let lastCid;
-    if (!!originalFilename){
+    if (originalFilename) {
       lastCid = await postUpdate(file, filename, originalFilename);
     } else {
       lastCid = await postAdd(file, filename);
@@ -93,18 +93,18 @@ class App extends HTMLElement {
     console.log(`lastCid = ${lastCid}`);
   }
 
-  async onPostRemove(e){
-    const {filename} = e.detail;
+  async onPostRemove (e) {
+    const { filename } = e.detail;
     const lastCid = await removeFile(filename);
     this._postList.setAttribute('cid', lastCid);
     this._links.setAttribute('lastcid', lastCid);
   }
 
-  async onFileUpload(e){
-    const {file} = e.detail;
+  async onFileUpload (e) {
+    const { file } = e.detail;
     console.log(`onFileUpload file.name=${file.name}`);
-    let lastCid = await mediaAdd(file);
-    if (file.type.startsWith('image/')){
+    const lastCid = await mediaAdd(file);
+    if (file.type.startsWith('image/')) {
       this._postForm.appendText(`![${file.name}](/media/${file.name})`);
     } else {
       this._postForm.appendText(`[${file.name}](/media/${file.name})`);
@@ -112,6 +112,5 @@ class App extends HTMLElement {
     this._postList.setAttribute('cid', lastCid);
     this._links.setAttribute('lastcid', lastCid);
   }
-
 }
 customElements.define('ipmb-app', App);

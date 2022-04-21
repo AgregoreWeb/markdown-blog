@@ -1,5 +1,5 @@
 class FileUpload extends HTMLElement {
-  constructor(){
+  constructor () {
     super();
     this.innerHTML = `
       <style>
@@ -21,19 +21,18 @@ class FileUpload extends HTMLElement {
           <input type="file" name="file" />
         </span>
       </form>
-    `
+    `;
   }
 
-  connectedCallback() {
+  connectedCallback () {
     this.querySelector('input[type=file]').addEventListener('change', e => {
       e.preventDefault();
       console.log('uploading file');
-      let file = this.querySelector('input[type=file]').files[0];
-      if (!!file) {
-        this.dispatchEvent(new CustomEvent('onFileSelected', { detail: {file} }));
-      };
+      const file = this.querySelector('input[type=file]').files[0];
+      if (file) {
+        this.dispatchEvent(new CustomEvent('onFileSelected', { detail: { file } }));
+      }
     });
   }
-
 }
 customElements.define('file-upload', FileUpload);

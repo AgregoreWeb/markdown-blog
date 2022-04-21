@@ -1,4 +1,4 @@
-import {loadContent} from './lib.js';
+import { loadContent } from './lib.js';
 
 const templateItem = document.createElement('template');
 
@@ -14,7 +14,7 @@ templateItem.innerHTML = `
 `;
 
 class PostList extends HTMLElement {
-  constructor() {
+  constructor () {
     super();
     this.innerHTML = `
       <style>
@@ -29,28 +29,28 @@ class PostList extends HTMLElement {
       </style>
     `;
     const container = document.createElement('div');
-    container.innerHTML = `<ul class="item-list"></ul>`;
+    container.innerHTML = '<ul class="item-list"></ul>';
     this.appendChild(container);
   }
 
-  async connectedCallback() {
+  async connectedCallback () {
     this._files = await loadContent(this.getAttribute('cid'));
     this._render();
   }
 
-  static get observedAttributes() { return ['cid']; }
+  static get observedAttributes () { return ['cid']; }
 
-  async attributeChangedCallback(name, oldValue, newValue) {
+  async attributeChangedCallback (name, oldValue, newValue) {
     this._files = await loadContent();
     this._render();
   }
 
-  _render(){
+  _render () {
     let postList = [];
-    for (let f of this._files){
-      const itemNode = templateItem.content.cloneNode(true)
+    for (const f of this._files) {
+      const itemNode = templateItem.content.cloneNode(true);
       postList = [...postList, itemNode];
-      const {filename, content, link, title, date, excerpt} = f;
+      const { filename, content, link, title, date, excerpt } = f;
 
       const h3 = itemNode.querySelector('h3');
       h3.textContent = title;
@@ -61,16 +61,15 @@ class PostList extends HTMLElement {
       const a = itemNode.querySelector('a');
       a.href = link;
       itemNode.querySelector('button.edit').addEventListener('click', e => {
-        this.dispatchEvent(new CustomEvent('onPostEdit', { detail: {filename, content} }));
+        this.dispatchEvent(new CustomEvent('onPostEdit', { detail: { filename, content } }));
       });
       const deleteButton = itemNode.querySelector('button.delete');
       deleteButton.addEventListener('click', e => {
-        this.dispatchEvent(new CustomEvent('onRemove', { detail: {filename} }));
+        this.dispatchEvent(new CustomEvent('onRemove', { detail: { filename } }));
       });
     }
-    let domList = this.querySelector('.item-list');
+    const domList = this.querySelector('.item-list');
     domList.replaceChildren(...postList);
   }
 }
 customElements.define('post-list', PostList);
-
