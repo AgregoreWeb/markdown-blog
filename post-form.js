@@ -14,11 +14,11 @@ export default class CreatePost extends HTMLElement {
       </style>
       <form id="postForm"></form>
       <div class="formContainer">
-        <label>Title</label>
-        <input name="title" form="postForm"/>
-        <label>Body</label>
+        <label for="titleInput">Title</label>
+        <input id="titleInput" name="title" form="postForm" required/>
+        <label for="contentInput">Body</label>
         <file-upload></file-upload>
-        <textarea name="content" rows="15" form="postForm"></textarea>
+        <textarea id="contentInput" name="content" rows="15" form="postForm" required></textarea>
         <input type="submit" value="Create" form="postForm"/>
       </div>
     `;
@@ -52,7 +52,7 @@ export default class CreatePost extends HTMLElement {
     if (!filename.match(/\.md$/)) {
       filename = `${filename}.md`;
     }
-    const content = this.querySelector('textarea[name="content"]').value;
+    const content = this.querySelector('textarea[name="content"]').value || '';
     console.log(`CreatePost.connectedCallback.submit ${filename} ${content}`);
     const eventDetail = {
       originalFilename,
