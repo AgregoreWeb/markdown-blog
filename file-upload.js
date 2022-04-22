@@ -3,23 +3,15 @@ class FileUpload extends HTMLElement {
     super();
     this.innerHTML = `
       <style>
-        .fileButton {
-          position: relative;
-        }
         input[type='file'] {
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 100%;
-          height: 100%;
-          opacity: 0;
+          display: none;
         }
       </style>
       <form enctype="multipart/form-data">
-        <span class="button fileButton">
+        <label for="fileSelect" class="button">
           Insert image
-          <input type="file" name="file" />
-        </span>
+        </label>
+        <input id="fileSelect" type="file" name="file" />
       </form>
     `;
   }
