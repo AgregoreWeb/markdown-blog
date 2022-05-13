@@ -47,3 +47,15 @@ A minimal blogging platform using IPFS Protocol Handlers and Markdown
   - first paragraph (cropped with a max-length)
 
 
+## To use:
+
+- start agregore browser locally
+- run `./push.sh`
+- go to ipns URL
+
+## Development
+
+- Edit files
+- run `./push.sh`
+
+See site at IPNS address printed by push
