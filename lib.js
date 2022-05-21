@@ -3,11 +3,18 @@
 // - make function names consistent nounVerb or verbNoun
 
 export async function publish (cid) {
-  const r = await fetch('ipns://ipmb', {
+  const makeKeyResponse = await fetch('ipns://localhost/?key=ipmb', {
+    method: 'POST'
+  })
+
+  const ipnsRoot = makeKeyResponse.headers.get('Location')
+
+  const publishResponse = await fetch(ipnsRoot, {
     method: 'POST',
     body: cid
   });
-  const ipns = await r.text();
+
+  const ipns = publishResponse.headers.get('Location');
   const updateHtml = !window.localStorage.ipns;
   window.localStorage.ipns = ipns;
   window.localStorage.ipnsCid = cid;
