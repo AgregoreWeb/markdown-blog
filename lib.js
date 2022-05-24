@@ -15,10 +15,12 @@ export async function publish (cid) {
     body: cid
   })
 
-  const ipns = publishResponse.headers.get('Location')
-  window.localStorage.ipns = ipns
+  if(!publishResponse.ok) throw new Error("Unable to publish: " + await publishResponse.text())
+
+  window.localStorage.ipns = ipnsRoot
   window.localStorage.ipnsCid = cid
-  return ipns
+
+  return ipnsRoot
 }
 
 export function parseFilename (filename) {
@@ -78,7 +80,7 @@ export async function createBlogIndex (contentUpdateFunction) {
   // write index.md
   url = `ipfs://${lastCid}/index.md`
   response = await fetch(url, {
-    method: 'POST',
+    method: 'PUT',
     body: indexBody,
     mode: 'cors'
   })
@@ -120,7 +122,7 @@ export async function postAdd (file, filename) {
     const url = `ipfs://${lastCid || EMPTY_DIRECTORY_CID}/ipmb-db/${filename}`
     console.log(`ADDING ${url}`)
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'PUT',
       body: file,
       mode: 'cors'
     })
@@ -151,7 +153,7 @@ export async function postUpdate (file, filename, originalFilename) {
     const url = `ipfs://${cid}/ipmb-db/${filename}`
     console.log(`ADDING ${url}`)
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'PUT',
       body: file,
       mode: 'cors'
     })
@@ -174,7 +176,7 @@ export async function mediaAdd (file) {
   const url = `ipfs://${lastCid || ''}/media/${file.name}`
   console.log(`ADDING ${url}`)
   const response = await fetch(url, {
-    method: 'POST',
+    method: 'PUT',
     body: file,
     mode: 'cors'
   })
@@ -184,7 +186,11 @@ export async function mediaAdd (file) {
 }
 
 async function _fetchPosts (cid) {
-  const request = await fetch(`ipfs://${cid}/ipmb-db/?noResolve`)
+  const request = await fetch(`ipfs://${cid}/ipmb-db/?noResolve`, {
+    headers: {
+      Accept: "application/json"
+    }
+  })
   let dirList = await request.json()
   dirList = dirList.filter(e => !!e) // empty dir returns `[ null ]`
 
