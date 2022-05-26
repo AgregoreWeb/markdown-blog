@@ -15,7 +15,7 @@ export async function publish (cid) {
     body: cid
   })
 
-  if(!publishResponse.ok) throw new Error("Unable to publish: " + await publishResponse.text())
+  if (!publishResponse.ok) throw new Error('Unable to publish: ' + await publishResponse.text())
 
   window.localStorage.ipns = ipnsRoot
   window.localStorage.ipnsCid = cid
@@ -30,9 +30,17 @@ export function parseFilename (filename) {
 }
 
 function excerpt (content) {
-  let excerpt_ = content.slice(0, 100)
+  let start = 0
+  if (content.slice(0, 3) === '---') {
+    const secondMark = content.indexOf('---', 3)
+    start =
+    secondMark > 0
+      ? secondMark
+      : 0
+  }
+  let excerpt_ = content.slice(start, 100)
   if (excerpt_.indexOf('\n') > 0) {
-    excerpt_ = excerpt_.slice(0, excerpt_.indexOf('\n') + 1)
+    excerpt_ = excerpt_.slice(start, excerpt_.indexOf('\n') + 1)
   }
   return excerpt_
 }
@@ -188,7 +196,7 @@ export async function mediaAdd (file) {
 async function _fetchPosts (cid) {
   const request = await fetch(`ipfs://${cid}/ipmb-db/?noResolve`, {
     headers: {
-      Accept: "application/json"
+      Accept: 'application/json'
     }
   })
   let dirList = await request.json()
