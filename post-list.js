@@ -1,6 +1,7 @@
-import { loadContent } from './lib.js';
+/* global HTMLElement, customElements, CustomEvent */
+import { loadContent } from './lib.js'
 
-const templateItem = document.createElement('template');
+const templateItem = document.createElement('template')
 
 templateItem.innerHTML = `
     <li class="item">
@@ -11,11 +12,11 @@ templateItem.innerHTML = `
       <button class="edit">Edit</button>
       <button class="delete">🗑 Delete</button>
     </li>
-`;
+`
 
 class PostList extends HTMLElement {
   constructor () {
-    super();
+    super()
     this.innerHTML = `
       <style>
         ul {
@@ -27,49 +28,49 @@ class PostList extends HTMLElement {
           margin-bottom: 0.4rem;
         }
       </style>
-    `;
-    const container = document.createElement('div');
-    container.innerHTML = '<ul class="item-list"></ul>';
-    this.appendChild(container);
+    `
+    const container = document.createElement('div')
+    container.innerHTML = '<ul class="item-list"></ul>'
+    this.appendChild(container)
   }
 
   async connectedCallback () {
-    this._files = await loadContent(this.getAttribute('cid'));
-    this._render();
+    this._files = await loadContent(this.getAttribute('cid'))
+    this._render()
   }
 
-  static get observedAttributes () { return ['cid']; }
+  static get observedAttributes () { return ['cid'] }
 
   async attributeChangedCallback (name, oldValue, newValue) {
-    this._files = await loadContent();
-    this._render();
+    this._files = await loadContent()
+    this._render()
   }
 
   _render () {
-    let postList = [];
+    let postList = []
     for (const f of this._files) {
-      const itemNode = templateItem.content.cloneNode(true);
-      postList = [...postList, itemNode];
-      const { filename, content, link, title, date, excerpt } = f;
+      const itemNode = templateItem.content.cloneNode(true)
+      postList = [...postList, itemNode]
+      const { filename, content, link, title, date, excerpt } = f
 
-      const h3 = itemNode.querySelector('h3');
-      h3.textContent = title;
-      const dateDiv = itemNode.querySelector('.date');
-      dateDiv.textContent = date;
-      const ex = itemNode.querySelector('.excerpt');
-      ex.textContent = excerpt;
-      const a = itemNode.querySelector('a');
-      a.href = link;
+      const h3 = itemNode.querySelector('h3')
+      h3.textContent = title
+      const dateDiv = itemNode.querySelector('.date')
+      dateDiv.textContent = date
+      const ex = itemNode.querySelector('.excerpt')
+      ex.textContent = excerpt
+      const a = itemNode.querySelector('a')
+      a.href = link
       itemNode.querySelector('button.edit').addEventListener('click', e => {
-        this.dispatchEvent(new CustomEvent('onPostEdit', { detail: { filename, content } }));
-      });
-      const deleteButton = itemNode.querySelector('button.delete');
+        this.dispatchEvent(new CustomEvent('onPostEdit', { detail: { filename, content } }))
+      })
+      const deleteButton = itemNode.querySelector('button.delete')
       deleteButton.addEventListener('click', e => {
-        this.dispatchEvent(new CustomEvent('onRemove', { detail: { filename } }));
-      });
+        this.dispatchEvent(new CustomEvent('onRemove', { detail: { filename } }))
+      })
     }
-    const domList = this.querySelector('.item-list');
-    domList.replaceChildren(...postList);
+    const domList = this.querySelector('.item-list')
+    domList.replaceChildren(...postList)
   }
 }
-customElements.define('post-list', PostList);
+customElements.define('post-list', PostList)
