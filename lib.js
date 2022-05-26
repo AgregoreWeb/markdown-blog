@@ -30,9 +30,14 @@ export function parseFilename (filename) {
 }
 
 function excerpt (content) {
-  let excerpt_ = content.slice(0, 100)
+  let start = 0;
+  if (content.slice(0, 3) === '---') {
+    let secondMark = content.indexOf('---', 3)
+    start = secondMark > 0 ? secondMark : 0
+  }
+  let excerpt_ = content.slice(start, 100)
   if (excerpt_.indexOf('\n') > 0) {
-    excerpt_ = excerpt_.slice(0, excerpt_.indexOf('\n') + 1)
+    excerpt_ = excerpt_.slice(start, excerpt_.indexOf('\n') + 1)
   }
   return excerpt_
 }
